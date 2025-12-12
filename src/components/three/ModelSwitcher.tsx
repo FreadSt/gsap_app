@@ -1,10 +1,15 @@
 import { useRef} from "react";
-import {PresentationControls} from "@react-three/drei";
+import { PresentationControls } from "@react-three/drei";
 import gsap from 'gsap';
-
+import * as THREE from "three"
 import MacbookModel16 from "../models/Macbook-16.jsx";
 import MacbookModel14 from "../models/Macbook-14.jsx";
 import {useGSAP} from "@gsap/react";
+import type { ComponentProps } from "react";
+
+type PresentationControlsProps = ComponentProps<typeof PresentationControls>;
+
+
 const ANIMATION_DURATION = 1;
 const OFFSET_DISTANCE = 5;
 
@@ -29,8 +34,9 @@ const ModelSwitcher = ({ scale, isMobile }) => {
   const SCALE_LARGE_DESKTOP = 0.08;
   const SCALE_LARGE_MOBILE = 0.05;
 
-  const smallMacbookRef = useRef<HTMLButtonElement | null>();
-  const largeMacbookRef = useRef();
+  const smallMacbookRef = useRef<THREE.Group | null>(null)
+  const largeMacbookRef = useRef<THREE.Group | null>(null)
+
 
   const showLargeMacbook = scale === SCALE_LARGE_DESKTOP || scale === SCALE_LARGE_MOBILE;
 
@@ -50,12 +56,12 @@ const ModelSwitcher = ({ scale, isMobile }) => {
     }
   }, [scale])
 
-  const controlsConfig = {
+  const controlsConfig: PresentationControlsProps = {
     snap: true,
     speed: 1,
     zoom: 1,
     azimuth: [-Infinity, Infinity],
-    config: {mass:1, tension: 0, friction: 26}
+    config: { mass: 1, tension: 0, friction: 26 }
   }
 
   return (
