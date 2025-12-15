@@ -1,2 +1,5 @@
-declare module "../models/Macbook-16.jsx";
-declare module "../models/Macbook-14.jsx";
+// src/types/models.d.ts
+declare module "*.jsx" {
+  const component: never;
+  export default component;
+}
