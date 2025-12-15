@@ -1,5 +1,5 @@
-// src/types/models.d.ts
 declare module "*.jsx" {
-  const component: never;
+  import { FC } from "react";
+  const component: FC<any>;
   export default component;
 }
