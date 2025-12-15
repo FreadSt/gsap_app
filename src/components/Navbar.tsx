@@ -1,7 +1,7 @@
 import React from 'react'
 import {navLinks} from "../constants";
 
-export const Navbar = () => {
+export const Navbar: React.FC = () => {
   return (
     <header>
       <nav>
