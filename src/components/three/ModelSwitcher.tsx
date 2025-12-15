@@ -61,7 +61,6 @@ const ModelSwitcher = ({ scale, isMobile }) => {
     speed: 1,
     zoom: 1,
     azimuth: [-Infinity, Infinity],
-    config: { mass: 1, tension: 0, friction: 26 }
   }
 
   return (
