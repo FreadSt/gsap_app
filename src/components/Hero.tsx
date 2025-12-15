@@ -24,7 +24,6 @@ const Hero: React.FC = () => {
         muted
         playsInline
         preload="metadata"
-        fetchpriority="high"
       />
       <button>
         Buy

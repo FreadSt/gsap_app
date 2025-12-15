@@ -35,7 +35,6 @@ const Showcase: React.FC = () => {
           autoPlay
           playsInline
           preload="metadata"
-          fetchpriority="high"
           className="max-w-[100%] max-h-[100%] object-cover"
         />
         <div className="mask xs:display-none">
