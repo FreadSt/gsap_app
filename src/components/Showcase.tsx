@@ -7,29 +7,38 @@ const Showcase: React.FC = () => {
   const isTablet = useMediaQuery({ query: '(max-width: 1024px)'});
 
   useGSAP(() => {
-    if(!isTablet) {
-      const timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: '#showcase',
-          start: 'top top',
-          end: 'bottom top',
-          scrub: true,
-          pin: true,
-        }
+    if (!isTablet) {
+      requestIdleCallback(() => {
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: "#showcase",
+            start: "top top",
+            end: "bottom top",
+            scrub: true,
+            pin: true,
+          },
+        })
+          .to(".mask img", { scale: 1.1 })
+          .to(".content", { opacity: 1, y: 0 });
       });
-
-      timeline
-        .to('.mask img', {
-          transform: 'scale(1.1)'
-        }).to('.content', { opacity: 1, y: 0, ease: 'power1.in' });
     }
-  }, [isTablet])
+  }, [isTablet]);
+
 
   return (
     <section id="showcase">
       <div className="media">
-        <video src="/videos/game.mp4" loop muted autoPlay playsInline />
-        <div className="mask">
+        <video
+          src="/videos/game.mp4"
+          loop
+          muted
+          autoPlay
+          playsInline
+          preload="metadata"
+          fetchpriority="high"
+          className="max-w-[100%] max-h-[100%] object-cover"
+        />
+        <div className="mask xs:display-none">
           <img src="/mask-logo.svg" alt=""/>
         </div>
       </div>

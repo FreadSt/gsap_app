@@ -17,11 +17,14 @@ const Hero: React.FC = () => {
         <img src='/title.png' alt='mac title'/>
       </div>
       <video
+        className="max-w-[100%] max-h-[100%] object-cover"
         ref={videoRef}
         src='/videos/hero.mp4'
         autoPlay
         muted
         playsInline
+        preload="metadata"
+        fetchpriority="high"
       />
       <button>
         Buy

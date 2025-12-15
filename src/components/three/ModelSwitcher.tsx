@@ -1,84 +1,90 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-import { useRef} from "react";
+import { useRef, useEffect } from "react";
 import { PresentationControls } from "@react-three/drei";
-import gsap from 'gsap';
-import * as THREE from "three"
+import gsap from "gsap";
+import * as THREE from "three";
+
 import MacbookModel16 from "../models/Macbook-16.jsx";
 import MacbookModel14 from "../models/Macbook-14.jsx";
-import {useGSAP} from "@gsap/react";
-import type { ComponentProps } from "react";
 
-type PresentationControlsProps = ComponentProps<typeof PresentationControls>;
-
-
-const ANIMATION_DURATION = 1;
 const OFFSET_DISTANCE = 5;
+const DURATION = 0.9;
 
-const fadeMeshes = (group, opacity) => {
-  if(!group) return;
+const setOpacity = (group: THREE.Group, value: number) => {
+  group.traverse((child) => {
+    if (child.isMesh) {
+      child.material.transparent = true;
+      child.material.opacity = value;
+    }
+  });
+};
+
+const animateTo = (
+  group: THREE.Group,
+  x: number,
+  opacity: number
+) => {
+  gsap.to(group.position, {
+    x,
+    duration: DURATION,
+    ease: "power2.out",
+  });
 
   group.traverse((child) => {
-    if(child.isMesh) {
-      child.material.transparent = true;
-      gsap.to(child.material, { opacity, duration: ANIMATION_DURATION })
+    if (child.isMesh) {
+      gsap.to(child.material, {
+        opacity,
+        duration: DURATION,
+        ease: "power2.out",
+      });
     }
-  })
-}
-
-const moveGroup = (group, x) => {
-  if(!group) return;
-
-  gsap.to(group.position, { x, duration: ANIMATION_DURATION })
-}
+  });
+};
 
 const ModelSwitcher = ({ scale, isMobile }) => {
-  const SCALE_LARGE_DESKTOP = 0.08;
-  const SCALE_LARGE_MOBILE = 0.05;
+  const largeRef = useRef<THREE.Group>(null);
+  const smallRef = useRef<THREE.Group>(null);
 
-  const smallMacbookRef = useRef<THREE.Group | null>(null)
-  const largeMacbookRef = useRef<THREE.Group | null>(null)
+  const isLarge = scale >= 0.08;
 
+  useEffect(() => {
+    if (!largeRef.current || !smallRef.current) return;
 
-  const showLargeMacbook = scale === SCALE_LARGE_DESKTOP || scale === SCALE_LARGE_MOBILE;
+    largeRef.current.position.x = OFFSET_DISTANCE;
+    setOpacity(largeRef.current, 0);
 
-  useGSAP(() => {
-    if(showLargeMacbook) {
-      moveGroup(smallMacbookRef.current, -OFFSET_DISTANCE);
-      moveGroup(largeMacbookRef.current, 0);
+    smallRef.current.position.x = 0;
+    setOpacity(smallRef.current, 1);
+  }, []);
 
-      fadeMeshes(smallMacbookRef.current, 0);
-      fadeMeshes(largeMacbookRef.current, 1);
+  useEffect(() => {
+    if (!largeRef.current || !smallRef.current) return;
+
+    if (isLarge) {
+      animateTo(smallRef.current, -OFFSET_DISTANCE, 0);
+      animateTo(largeRef.current, 0, 1);
     } else {
-      moveGroup(smallMacbookRef.current, 0);
-      moveGroup(largeMacbookRef.current, OFFSET_DISTANCE);
-
-      fadeMeshes(smallMacbookRef.current, 1);
-      fadeMeshes(largeMacbookRef.current, 0);
+      animateTo(smallRef.current, 0, 1);
+      animateTo(largeRef.current, OFFSET_DISTANCE, 0);
     }
-  }, [scale])
-
-  const controlsConfig: PresentationControlsProps = {
-    snap: true,
-    speed: 1,
-    zoom: 1,
-    azimuth: [-Infinity, Infinity],
-  }
+  }, [isLarge]);
 
   return (
-    <>
-      <PresentationControls {...controlsConfig}>
-        <group ref={largeMacbookRef}>
-          <MacbookModel16 scale={isMobile ? 0.05 : 0.08} />
-        </group>
-      </PresentationControls>
+    <PresentationControls
+      snap
+      speed={1}
+      zoom={1}
+      azimuth={[-Infinity, Infinity]}
+    >
+      <group ref={smallRef}>
+        <MacbookModel14 scale={isMobile ? 0.04 : 0.06} />
+      </group>
 
-      <PresentationControls {...controlsConfig}>
-        <group ref={smallMacbookRef}>
-          <MacbookModel14 scale={isMobile ? 0.04 : 0.06} />
-        </group>
-      </PresentationControls>
-    </>
-  )
-}
-export default ModelSwitcher
+      <group ref={largeRef}>
+        <MacbookModel16 scale={isMobile ? 0.05 : 0.08} />
+      </group>
+    </PresentationControls>
+  );
+};
+
+export default ModelSwitcher;

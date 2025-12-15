@@ -5,11 +5,17 @@ import {Canvas} from "@react-three/fiber";
 import ModelSwitcher from './three/ModelSwitcher.jsx'
 import {useMediaQuery} from "react-responsive";
 import StudioLights from "./three/StudioLights.tsx";
+import {useEffect, useState} from "react";
 
 const ProductViewer = () => {
   const { color, scale, setColor, setScale } = useMacbookStore();
+  const [show3D, setShow3D] = useState<boolean>(false);
 
   const isMobile = useMediaQuery({ query: '(max-width: 1024px)'});
+
+  useEffect(() => {
+    requestIdleCallback(() => setShow3D(true));
+  }, []);
 
   return (
     <section id="product-viewer">
@@ -47,11 +53,16 @@ const ProductViewer = () => {
         </div>
       </div>
 
-      <Canvas id="canvas" camera={{ position: [0, 2, 5], fov: 50, near: 0.1, far: 100}}>
-        <StudioLights />
+      {
+        show3D ?
+          <Canvas id="canvas" camera={{position: [0, 2, 5], fov: 50, near: 0.1, far: 100}}>
+            <StudioLights />
 
-        <ModelSwitcher scale={isMobile ? scale - 0.03 : scale} isMobile={isMobile} />
-      </Canvas>
+            <ModelSwitcher scale={isMobile ? scale - 0.03 : scale} isMobile={isMobile} />
+          </Canvas>
+          :
+          <h4>Loading...</h4>
+      }
     </section>
   )
 }
